@@ -1,0 +1,118 @@
+````markdown
+# Notification Service with RabbitMQ
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A notification service demonstrating asynchronous processing using RabbitMQ and data persistence with MongoDB.
+
+## Overview
+
+Sends email, SMS, and in-app notifications. Leverages RabbitMQ for queueing and MongoDB for storage.
+
+## Prerequisites
+
+- Node.js (>= 18)
+- npm
+- MongoDB (running)
+- RabbitMQ (running with Management Plugin enabled)
+
+## Setup
+
+1.  **Clone:**
+    ```bash
+    git clone <your_repository_url>
+    cd notification-service
+    ```
+2.  **Install Dependencies:**
+    ```bash
+    npm install
+    cd queue && npm install amqplib dotenv mongoose && cd ..
+    ```
+3.  **Environment Variables (`.env`):**
+    ```env
+    PORT=5000
+    MONGODB_URI=mongodb://localhost:27017/notificationsDB
+    RABBITMQ_URL=amqp://guest:guest@localhost:5672
+    ```
+
+## Running
+
+1.  **Start Server (Terminal 1):**
+    ```bash
+    node server.js
+    ```
+2.  **Start Consumer (Terminal 2):**
+    ```bash
+    node queue/consumer.js
+    ```
+
+## Testing (Postman Collection)
+
+```json
+{
+	"info": {
+		"_postman_id": "YOUR_POSTMAN_ID_HERE",
+		"name": "Notification Service Tests",
+		"schema": "[https://schema.getpostman.com/json/collection/v2.1.0/collection.json](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)"
+	},
+	"item": [
+		{
+			"name": "Send Email Notification",
+			"request": {
+				"method": "POST",
+				"header": [{"key": "Content-Type", "name": "Content-Type", "value": "application/json", "type": "text"}],
+				"body": {"mode": "raw", "raw": "{\n    \"userId\": \"testUser\",\n    \"type\": \"email\",\n    \"subject\": \"Test Email\",\n    \"message\": \"This is a test email notification.\"\n}", "options": {"raw": {"language": "json"}}},
+				"url": {"raw": "http://localhost:5000/notifications", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["notifications"]}}},
+			"response": []
+		},
+		{
+			"name": "Send SMS Notification",
+			"request": {
+				"method": "POST",
+				"header": [{"key": "Content-Type", "name": "Content-Type", "value": "application/json", "type": "text"}],
+				"body": {"mode": "raw", "raw": "{\n    \"userId\": \"testUser\",\n    \"type\": \"sms\",\n    \"message\": \"This is a test SMS notification.\"\n}", "options": {"raw": {"language": "json"}}},
+				"url": {"raw": "http://localhost:5000/notifications", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["notifications"]}}},
+			"response": []
+		},
+		{
+			"name": "Send In-App Notification",
+			"request": {
+				"method": "POST",
+				"header": [{"key": "Content-Type", "name": "Content-Type", "value": "application/json", "type": "text"}],
+				"body": {"mode": "raw", "raw": "{\n    \"userId\": \"testUser\",\n    \"type\": \"inapp\",\n    \"message\": \"This is a test in-app notification.\"\n}", "options": {"raw": {"language": "json"}}},
+				"url": {"raw": "http://localhost:5000/notifications", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["notifications"]}}},
+			"response": []
+		},
+		{
+			"name": "Get Notifications for User (testUser)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {"raw": "http://localhost:5000/users/testUser/notifications", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["users", "testUser", "notifications"]}}},
+			"response": []
+		}
+	]
+}
+````
+
+**Steps:**
+
+1.  Start server and consumer.
+2.  Import the Postman collection.
+3.  Send "Send..." requests, observe server and consumer logs, and check MongoDB for `status` updates to `"sent"`.
+4.  Use "Get Notifications..." to verify retrieval.
+
+## Monitoring
+
+  - **RabbitMQ Management UI:** `http://localhost:15672/` (default `guest/guest`).
+
+## Notes
+
+  - Production: Use secure RabbitMQ credentials.
+  - Middleware simulates sending. Implement actual services in `middleware/`.
+  - Consider robust error handling and logging for production.
+
+<!-- end list -->
+
+```
+```
